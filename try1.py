@@ -27,7 +27,7 @@ def get_transcript_from_video(video_url):
     # Extract video ID from the video link
     video_id = video_url.split('v=')[1]
     # Get the transcript for the video
-    youtube = build('youtube', 'v3', developerKey=yt_api_key)
+    youtube = build('youtube', 'v3', developerKey=YT_API_KEY)
     captions = youtube.captions().list(part='snippet', videoId=video_id).execute()
     caption = captions['items'][0]['id']
     transcript_list = YouTubeTranscriptApi.get_transcript(video_id)

@@ -29,7 +29,7 @@ def get_latest_video(channel_id):
     headers = {
     'Accept': 'application/json'
     }
-    conn.request("GET", "/youtube/v3/channels?part=contentDetails&id="+channel_id+"&key="+yt_api_key, payload, headers)
+    conn.request("GET", "/youtube/v3/channels?part=contentDetails&id="+channel_id+"&key="+YT_API_KEY, payload, headers)
     response = conn.getresponse()
 
     if response.status == 200:
@@ -42,7 +42,7 @@ def get_latest_video(channel_id):
         headers = {
         'Accept': 'application/json'
         }
-        conn2.request("GET", "/youtube/v3/playlistItems?part=snippet&playlistId="+playlist_id+"&maxResults=1&key="+yt_api_key, payload, headers)
+        conn2.request("GET", "/youtube/v3/playlistItems?part=snippet&playlistId="+playlist_id+"&maxResults=1&key="+YT_API_KEY, payload, headers)
         playlist_response = conn2.getresponse()
         
         if playlist_response.status == 200:
