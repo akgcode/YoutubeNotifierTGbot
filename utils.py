@@ -3,10 +3,15 @@ import json
 import os
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
+from googleapiclient.discovery import build
+from youtube_transcript_api import YouTubeTranscriptApi
+import markdown
+import requests
 
 YT_API_KEY = ''
 SENDGRID_API_KEY = ''
 GEMINI_API_KEY = ''
+TELEGRAM_BOT_API_KEY=''
 
 import json
 def load_config(file_path):
@@ -16,12 +21,11 @@ def load_config(file_path):
 
 def init():
     config = load_config('config.json')
+    global YT_API_KEY, SENDGRID_API_KEY, GEMINI_API_KEY, TELEGRAM_BOT_API_KEY
     YT_API_KEY = config['YT_API_KEY']
     SENDGRID_API_KEY = config['SENDGRID_API_KEY']
     GEMINI_API_KEY = config['GEMINI_API_KEY']
-    print(YT_API_KEY, SENDGRID_API_KEY, GEMINI_API_KEY)
-
-init()
+    TELEGRAM_BOT_API_KEY = config['TELEGRAM_BOT_API_KEY']
 
 def get_latest_video(channel_id):
     conn = http.client.HTTPSConnection("youtube.googleapis.com")
@@ -31,7 +35,8 @@ def get_latest_video(channel_id):
     }
     conn.request("GET", "/youtube/v3/channels?part=contentDetails&id="+channel_id+"&key="+YT_API_KEY, payload, headers)
     response = conn.getresponse()
-
+    print(YT_API_KEY)
+    print("connection respoonse code = ",response.status)
     if response.status == 200:
         channel_data = json.loads(response.read().decode('utf-8'))
         playlist_id = channel_data['items'][0]['contentDetails']['relatedPlaylists']['uploads']
@@ -82,15 +87,19 @@ def get_summary_from_llm(tokenized_transcript):
     return summarized_text
 
 
-def send_email(email, video_title, video_url, summary):
+def send_email(email, video_title, video_url, summary, channel_name):
+    summary_html = markdown.markdown(summary)
+    
     message = Mail(
         from_email = 'akgcorporate@proton.me',
         to_emails = email,
-        subject='Sending with Twilio SendGrid is Fun',
+        subject="Here's your YouTube summary from Crypto space",
         html_content=f"""
-            <strong>{video_title}</strong>
+            <strong>Channel Name: {channel_name}</strong><br>
+            <strong>Video Title: {video_title}</strong>
             <br><br>
-            Summary: {summary}
+            <strong>Summary: </strong> 
+            {summary_html}
             <br><br>
             <a href="{video_url}">Watch the video</a>
             """
@@ -104,3 +113,49 @@ def send_email(email, video_title, video_url, summary):
     except Exception as e:
         print(e.message)
 
+def get_transcript_from_video(video_url):
+    # Extract video ID from the video link
+    video_id = video_url.split('v=')[1]
+    # Get the transcript for the video
+    youtube = build('youtube', 'v3', developerKey=YT_API_KEY)
+    captions = youtube.captions().list(part='snippet', videoId=video_id).execute()
+    caption = captions['items'][0]['id']
+    transcript_list = YouTubeTranscriptApi.get_transcript(video_id)
+
+    transcript_text=""
+
+    for transcript in transcript_list:
+        transcript_text+=transcript['text']
+
+    if transcript_text!="":
+        # chunk_size = 500
+        # for i in range(0, len(transcript_txt), chunk_size):
+        #     print(transcript_txt[i:i+chunk_size])
+        # print(transcript_txt)
+        return transcript_text
+    else:
+        print("Transcript not found")
+        return None
+    
+
+def send_message_to_telegram(video_title, video_url, summary, channel_name):
+    # Formatting TooooooooooDOooooo
+    # summary_html = markdown.markdown(summary)
+    # formatted_message = f"""
+    #         # Here's your YouTube summary from Crypto space<br><br>
+    #         <strong>Channel Name: {channel_name}</strong><br>
+    #         <strong>Video Title: {video_title}</strong>
+    #         <br><br>
+    #         <strong>Summary: </strong> 
+    #         {summary_html}
+    #         <br><br>
+    #         <a href="{video_url}">Watch the video</a>
+    #         """
+    video_metadata = f"Channel Name: {channel_name}\nVideo Title: {video_title}\nVideo URL: {video_url}\nSummary is as follows:"
+    
+    chat_id="@testingcryptoakg"
+    url_video_metadata = f"https://api.telegram.org/bot{TELEGRAM_BOT_API_KEY}/sendMessage?chat_id={chat_id}&text={video_metadata}&parse_mode=Markdown"
+    requests.get(url_video_metadata)
+
+    url_summary = f"https://api.telegram.org/bot{TELEGRAM_BOT_API_KEY}/sendMessage?chat_id={chat_id}&text={summary}&parse_mode=Markdown"
+    requests.get(url_summary)

@@ -103,9 +103,14 @@ if __name__ == "__main__":
     # Create a channel
     create_channel(db_name, "UCt7esZt_MwWXl9fgT0yO1eA", "Drake on Digital ")
     create_channel(db_name, "UCbLhGKVY-bJPcawebgtNfbw", "Altcoin Daily")
+    create_channel(db_name, "UCaRLNHXRddAbYMlqAcrlwaA", "PC Crypto")
+    create_channel(db_name, "UCqK_GSMbpiV8spgD3ZGloSw", "Coin Bureau")
+    create_channel(db_name, "UCfQaLLoJYaxg9ZNJVHCR9Lg", "Gerhard - Bitcoin Strategy")
+    create_channel(db_name, "UCCRxYlYOmLE2l5wxs3ckJtg", "Bankless Clips")
     # Read the channel
     print(read_channel(db_name, "UCbLhGKVY-bJPcawebgtNfbw"))
     print(read_channel(db_name, "UCt7esZt_MwWXl9fgT0yO1eA"))
+    print(read_channel(db_name, "UCaRLNHXRddAbYMlqAcrlwaA"))
 
     # Update the channel
     # videos = ["Video3", "Video4"]
