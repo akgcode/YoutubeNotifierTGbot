@@ -61,7 +61,7 @@ def send_notification(user_id, video_title, video_url, summary, channel_name):
 
 # @profile
 def job():
-    init()
+    # init()
     logging.info("Job started")
     db_name = "channelsVideoData.db"
     subscribed_channels = list_channel_ids(db_name)
