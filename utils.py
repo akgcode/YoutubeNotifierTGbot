@@ -8,24 +8,24 @@ from youtube_transcript_api import YouTubeTranscriptApi
 import markdown
 import requests
 
-YT_API_KEY = ''
-SENDGRID_API_KEY = ''
-GEMINI_API_KEY = ''
-TELEGRAM_BOT_API_KEY=''
+YT_API_KEY = os.getenv('YT_API_KEY', '')
+SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY', '')
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', '')
+TELEGRAM_BOT_API_KEY= os.getenv('TELEGRAM_BOT_API_KEY', '')
 
-import json
-def load_config(file_path):
-    with open(file_path, 'r') as f:
-        return json.load(f)
+# import json
+# def load_config(file_path):
+#     with open(file_path, 'r') as f:
+#         return json.load(f)
 
 
-def init():
-    config = load_config('config.json')
-    global YT_API_KEY, SENDGRID_API_KEY, GEMINI_API_KEY, TELEGRAM_BOT_API_KEY
-    YT_API_KEY = config['YT_API_KEY']
-    SENDGRID_API_KEY = config['SENDGRID_API_KEY']
-    GEMINI_API_KEY = config['GEMINI_API_KEY']
-    TELEGRAM_BOT_API_KEY = config['TELEGRAM_BOT_API_KEY']
+# def init():
+#     config = load_config('config.json')
+#     global YT_API_KEY, SENDGRID_API_KEY, GEMINI_API_KEY, TELEGRAM_BOT_API_KEY
+#     YT_API_KEY = config['YT_API_KEY']
+#     SENDGRID_API_KEY = config['SENDGRID_API_KEY']
+#     GEMINI_API_KEY = config['GEMINI_API_KEY']
+#     TELEGRAM_BOT_API_KEY = config['TELEGRAM_BOT_API_KEY']
 
 def get_latest_video(channel_id):
     conn = http.client.HTTPSConnection("youtube.googleapis.com")
