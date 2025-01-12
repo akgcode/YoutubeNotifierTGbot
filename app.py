@@ -6,10 +6,10 @@ import subprocess
 
 subprocess.run(["python", "database.py"])
 
-schedule.every(60).seconds.do(job)
+schedule.every(60).minutes.do(job)
 
 while True:
     schedule.run_pending()
-    time.sleep(1)
+    time.sleep(3600)
 
 # job()
